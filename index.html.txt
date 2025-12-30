@@ -1,0 +1,385 @@
+code
+Html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To My Love | 2026</title>
+    
+    <!-- Libraries: GSAP for animations, Lucide for icons, Canvas-Confetti for the finale -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:italic,wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #050505;
+            --card-bg: rgba(20, 20, 20, 0.7);
+            --accent: #d4af37; /* Gold */
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+            --rose: #ff4d6d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            cursor: none; /* Custom cursor for modern feel */
+        }
+
+        /* Custom Cursor */
+        #cursor {
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
+        }
+
+        /* Cinematic Background */
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            filter: blur(1px);
+        }
+
+        /* Guided Sections */
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Glassmorphism Elements */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Typography */
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #fff, var(--accent), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        /* Countdown Style */
+        .countdown-container {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .count-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .count-num {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .count-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: white;
+            color: black;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255,255,255,0.1);
+        }
+
+        /* The Heart Letter */
+        #letter {
+            opacity: 0;
+            transform: translateY(30px);
+            max-width: 500px;
+            line-height: 1.8;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.2rem;
+        }
+
+        /* Audio Control */
+        .audio-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .glass-card { padding: 1.5rem; }
+            h1 { font-size: 2rem; }
+            .countdown-container { gap: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+    <canvas id="canvas-bg"></canvas>
+
+    <!-- Section 1: The Intro -->
+    <section id="hero">
+        <div class="glass-card" id="intro-card">
+            <i data-lucide="sparkles" style="color: var(--accent); margin-bottom: 1rem;"></i>
+            <h1 class="gradient-text">Before the clock strikes...</h1>
+            <p style="color: var(--text-dim);">I have something I wanted to tell you.</p>
+            <button class="btn-primary" onclick="startJourney()">Open My Heart</button>
+        </div>
+    </section>
+
+    <!-- Section 2: The Countdown & Memories -->
+    <section id="countdown-section" style="display: none;">
+        <div class="glass-card">
+            <h2 id="dynamic-title">Counting down to our best year yet</h2>
+            <div class="countdown-container">
+                <div class="count-box"><span class="count-num" id="days">00</span><span class="count-label">Days</span></div>
+                <div class="count-box"><span class="count-num" id="hours">00</span><span class="count-label">Hrs</span></div>
+                <div class="count-box"><span class="count-num" id="mins">00</span><span class="count-label">Mins</span></div>
+                <div class="count-box"><span class="count-num" id="secs">00</span><span class="count-label">Secs</span></div>
+            </div>
+            <div id="letter" style="margin-top: 3rem;">
+                "Every second spent with you in 2025 was a gift. As we stand on the edge of 2026, I want you to know that you are my constant, my calm, and my greatest adventure."
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: The Big Reveal (Hidden until 12:00 or click) -->
+    <section id="celebration" style="display: none;">
+        <h1 class="gradient-text" style="font-size: 5rem; text-align: center;">2026</h1>
+        <h2 style="font-family: 'Inter'; font-weight: 300; letter-spacing: 5px;">HAPPY NEW YEAR, MY LOVE</h2>
+        <div class="glass-card" style="margin-top: 2rem;">
+            <p>"New year, same love, infinite possibilities. Let's make this year unforgettable."</p>
+        </div>
+        <button class="btn-primary" onclick="celebrate()">Make a Wish</button>
+    </section>
+
+    <button class="audio-toggle" onclick="toggleMute()">
+        <i data-lucide="volume-2" id="volume-icon"></i>
+    </button>
+
+    <!-- Background Ambient Music (Optional - Provide a subtle royalty free URL) -->
+    <audio id="ambient-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // 1. Custom Cursor Movement
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, {
+                x: e.clientX - 10,
+                y: e.clientY - 10,
+                duration: 0.1
+            });
+        });
+
+        // 2. Generative Background Particles
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speed = Math.random() * 0.5;
+                this.opacity = Math.random();
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y < 0) this.reset();
+            }
+            draw() {
+                ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 100; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // 3. Journey Logic
+        function startJourney() {
+            const music = document.getElementById('ambient-music');
+            music.play().catch(() => console.log("Music blocked by browser policy"));
+
+            gsap.to("#hero", { opacity: 0, duration: 1, onComplete: () => {
+                document.getElementById('hero').style.display = 'none';
+                const secondSec = document.getElementById('countdown-section');
+                secondSec.style.display = 'flex';
+                gsap.from(secondSec, { opacity: 0, y: 50, duration: 1.5 });
+                
+                // Animate letter reveal
+                gsap.to("#letter", { opacity: 1, y: 0, delay: 1, duration: 2 });
+            }});
+        }
+
+        // 4. Countdown Timer Logic
+        const targetDate = new Date("January 1, 2026 00:00:00").getTime();
+
+        const updateCountdown = setInterval(() => {
+            const now = new Date().getTime();
+            const diff = targetDate - now;
+
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerText = d.toString().padStart(2, '0');
+            document.getElementById('hours').innerText = h.toString().padStart(2, '0');
+            document.getElementById('mins').innerText = m.toString().padStart(2, '0');
+            document.getElementById('secs').innerText = s.toString().padStart(2, '0');
+
+            if (diff <= 0) {
+                clearInterval(updateCountdown);
+                showCelebration();
+            }
+        }, 1000);
+
+        function showCelebration() {
+            gsap.to("#countdown-section", { opacity: 0, duration: 1, onComplete: () => {
+                document.getElementById('countdown-section').style.display = 'none';
+                const final = document.getElementById('celebration');
+                final.style.display = 'flex';
+                gsap.from(final, { opacity: 0, scale: 0.8, duration: 2 });
+                celebrate();
+            }});
+        }
+
+        // 5. Firework / Confetti Effect
+        function celebrate() {
+            const duration = 15 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+              return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+              const timeLeft = animationEnd - Date.now();
+
+              if (timeLeft <= 0) {
+                return clearInterval(interval);
+              }
+
+              const particleCount = 50 * (timeLeft / duration);
+              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        // Audio Toggle
+        let isMuted = false;
+        function toggleMute() {
+            const music = document.getElementById('ambient-music');
+            const icon = document.getElementById('volume-icon');
+            isMuted = !isMuted;
+            music.muted = isMuted;
+            icon.setAttribute('data-lucide', isMuted ? 'volume-x' : 'volume-2');
+            lucide.createIcons();
+        }
+
+        // Manual skip for testing (Remove in production if you want strictly real-time)
+        // setTimeout(showCelebration, 15000); 
+    </script>
+</body>
+</html>
